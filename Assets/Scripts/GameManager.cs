@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-1)]
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    public static GameManager Instance { get; private set; }
+   
 
     private const int NUM_LEVELS = 2;
 
@@ -12,22 +12,9 @@ public class GameManager : MonoBehaviour
     public int lives { get; private set; } = 3;
     public int score { get; private set; } = 0;
 
-    private void Awake()
-    {
-        if (Instance != null) {
-            DestroyImmediate(gameObject);
-        } else {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-    }
+   
 
-    private void OnDestroy()
-    {
-        if (Instance == this) {
-            Instance = null;
-        }
-    }
+  
 
     private void Start()
     {
