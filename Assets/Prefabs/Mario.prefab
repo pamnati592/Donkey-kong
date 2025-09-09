@@ -191,6 +191,8 @@ MonoBehaviour:
   hammerHitbox: {fileID: 6417129782135855251}
   attackDuration: 0.15
   attackCooldown: 0.1
+  ladderExitBuffer: 0.2
+  ladderCheckUpExtra: 0.3
 --- !u!1 &6417129782135855251
 GameObject:
   m_ObjectHideFlags: 0

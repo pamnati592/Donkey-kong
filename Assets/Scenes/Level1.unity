@@ -278,6 +278,10 @@ PrefabInstance:
       value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: -4230430476135932205, guid: 084c212c80f8a614c9fe1e654786f383, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: -4230430476135932205, guid: 084c212c80f8a614c9fe1e654786f383, type: 3}
       propertyPath: m_SpriteTilingProperty.newSize.y
       value: 1.25
       objectReference: {fileID: 0}
@@ -505,8 +509,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -4230430476135932205, guid: 084c212c80f8a614c9fe1e654786f383, type: 3}
+      propertyPath: m_SpriteTilingProperty.newSize.x
+      value: 0.46866155
+      objectReference: {fileID: 0}
+    - target: {fileID: -4230430476135932205, guid: 084c212c80f8a614c9fe1e654786f383, type: 3}
       propertyPath: m_SpriteTilingProperty.newSize.y
-      value: 1.5
+      value: 1.7820464
       objectReference: {fileID: 0}
     - target: {fileID: 3266898068976127468, guid: 084c212c80f8a614c9fe1e654786f383, type: 3}
       propertyPath: m_Name
@@ -1209,7 +1217,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1447300431
 MonoBehaviour:
   m_ObjectHideFlags: 0

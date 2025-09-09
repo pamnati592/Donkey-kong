@@ -11,6 +11,7 @@ TagManager:
   - Ground
   - Ladder
   - Hammer
+  - LadderUnderMe
   layers:
   - Default
   - TransparentFX
