@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Sprite[] runSprites;
     [SerializeField] private Sprite[] runHammerSprites;
     [SerializeField] private Sprite[] attackHammerSprites;
-    [SerializeField] private Sprite climbSprite;
+    [SerializeField] private Sprite[] climbSprites;
 
     [Header("Physics")]
     [SerializeField] private Rigidbody2D rb;
@@ -32,11 +32,15 @@ public class Player : MonoBehaviour
     [SerializeField] private float ladderExitBuffer = 0.2f;
     [SerializeField] private float ladderCheckUpExtra = 0.3f;
 
+    [Header("Ladder Enter Down")]
+    [SerializeField] private float enterDownOffset = 0.2f;
+
     private Vector2 direction;
     private bool grounded;
     private bool climbing;
 
     private int spriteIndex;
+    private int climbIndex;
     private Coroutine animRoutine;
 
     private float vInput;
@@ -155,14 +159,29 @@ public class Player : MonoBehaviour
                 continue;
             }
 
-            float fps = climbing ? climbFps : runFps;
-            float delay = (fps <= 0f) ? (1f / 12f) : (1f / fps);
-
             if (climbing)
             {
-                spriteRenderer.sprite = climbSprite;
+                float delay;
+                if (Mathf.Abs(vInput) > 0.01f && climbSprites != null && climbSprites.Length > 0)
+                {
+                    climbIndex = (climbIndex + 1) % climbSprites.Length;
+                    spriteRenderer.sprite = climbSprites[climbIndex];
+                    delay = 1f / Mathf.Max(climbFps, 1f);
+                }
+                else
+                {
+                    if (climbSprites != null && climbSprites.Length > 0)
+                        spriteRenderer.sprite = climbSprites[0];
+                    delay = 1f / 12f;
+                }
+                yield return new WaitForSeconds(delay);
+                continue;
             }
-            else if (movingHorizontally)
+
+            float fps = runFps;
+            float runDelay = (fps <= 0f) ? (1f / 12f) : (1f / fps);
+
+            if (movingHorizontally)
             {
                 var arr = HasHammer ? runHammerSprites : runSprites;
                 if (arr != null && arr.Length > 0)
@@ -178,7 +197,7 @@ public class Player : MonoBehaviour
                     spriteRenderer.sprite = arr[0];
             }
 
-            yield return new WaitForSeconds(delay);
+            yield return new WaitForSeconds(runDelay);
         }
     }
 
@@ -231,34 +250,62 @@ public class Player : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (!other.CompareTag("Ladder")) return;
+        if (other.CompareTag("Ladder"))
+        {
+            currentLadder = other;
+            ladderTopY = other.bounds.max.y;
 
-        currentLadder = other;
-        ladderTopY = other.bounds.max.y;
+            if (vInput > 0.1f)
+                StartClimb(other);
+            else if (grounded)
+                StopClimb();
 
-        if (vInput > 0.1f) StartClimb(other);
-        else if (grounded) StopClimb();
+            return;
+        }
+
+        if (other.CompareTag("LadderUnderMe"))
+        {
+            if (grounded && vInput < -0.1f)
+            {
+                var ladder = FindLadderNearProbe(other);
+                this.transform.position = new Vector3(transform.position.x, transform.position.y - 0.8f, transform.position.z);
+                if (ladder != null)
+                {
+                    currentLadder = ladder;
+                    ladderTopY = ladder.bounds.max.y;
+                    StartClimb(ladder, true);
+                }
+            }
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (!other.CompareTag("Ladder")) return;
-
-        StopClimb();
-        currentLadder = null;
-        ladderTopY = 0f;
+        if (other.CompareTag("Ladder"))
+        {
+            StopClimb();
+            currentLadder = null;
+            ladderTopY = 0f;
+            exitingLadder = false;
+        }
     }
 
-    private void StartClimb(Collider2D ladder)
+    private void StartClimb(Collider2D ladder, bool enteringFromTopDown = false)
     {
         if (!climbing)
         {
             climbing = true;
             capsuleCollider.isTrigger = true;
+            climbIndex = 0;
+            if (climbSprites != null && climbSprites.Length > 0)
+                spriteRenderer.sprite = climbSprites[0];
         }
 
         float centerX = ladder.bounds.center.x;
-        transform.position = new Vector3(centerX, transform.position.y, transform.position.z);
+        float y = transform.position.y;
+        if (enteringFromTopDown) y -= enterDownOffset;
+
+        transform.position = new Vector3(centerX, y, transform.position.z);
     }
 
     private void StopClimb()
@@ -280,5 +327,14 @@ public class Player : MonoBehaviour
         currentLadder = null;
         ladderTopY = 0f;
         exitingLadder = false;
+    }
+
+    private Collider2D FindLadderNearProbe(Collider2D probe)
+    {
+        var hits = Physics2D.OverlapBoxAll(probe.bounds.center, probe.bounds.size * 7f, 0f);
+        for (int i = 0; i < hits.Length; i++)
+            if (hits[i].CompareTag("Ladder"))
+                return hits[i];
+        return null;
     }
 }

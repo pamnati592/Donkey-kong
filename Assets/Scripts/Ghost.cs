@@ -5,27 +5,34 @@ public class GhostSimple : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float speed = 1.8f;
-    [SerializeField] private float checkAhead = 1;   
-    [SerializeField] private float checkDown = 0.6f;    
+    [SerializeField] private float checkDown = 0.6f;
+    [SerializeField] private float edgeOffset = 0.02f;
+    [SerializeField] private LayerMask groundMask;
 
-    private int dir = -1; 
+    private int dir = -1;
+    private Collider2D col;
 
     private void Awake()
     {
-        
+        if (!rb) rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     private void FixedUpdate()
     {
         rb.linearVelocity = new Vector2(dir * speed, 0f);
 
-        Vector2 origin = (Vector2)transform.position + Vector2.right * dir * checkAhead;
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, checkDown);
+        Bounds b = col.bounds;
+        float frontX = (dir > 0) ? b.max.x : b.min.x;
+        Vector2 foot = new Vector2(frontX + dir * edgeOffset, b.min.y);
+        Vector2 origin = foot + Vector2.up * 0.05f;
 
-        if (hit.collider == null || !hit.collider.CompareTag("Ground"))
-            Flip();
+        RaycastHit2D downHit = Physics2D.Raycast(origin, Vector2.down, checkDown, groundMask);
+        if (!downHit) Flip();
     }
 
     private void Flip()
@@ -36,15 +43,23 @@ public class GhostSimple : MonoBehaviour
         transform.eulerAngles = e;
     }
 
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.collider.CompareTag("Player"))
-            GameManager.Instance.LevelFailed();
-    }
-
+  
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Hammer"))
-            Destroy(gameObject);
+       
+        if (other.CompareTag("Player"))
+        {
+            GameManager.Instance.LevelFailed();
+        }
     }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            GameManager.Instance.LevelFailed();
+        }
+    }
+
+   
 }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7375122732666236025}
   - component: {fileID: -2619286031287197184}
   - component: {fileID: -1086317837705952738}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Ghost
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -120,8 +120,8 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 1
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
@@ -150,8 +150,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
   speed: 6
-  checkAhead: 0.35
   checkDown: 1.5
+  edgeOffset: 0.02
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!50 &-1086317837705952738
 Rigidbody2D:
   serializedVersion: 5

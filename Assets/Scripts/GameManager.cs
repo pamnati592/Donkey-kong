@@ -11,7 +11,7 @@ public class GameManager : Singleton<GameManager>
    
 
     [Header("Levels")]
-    [SerializeField] private int numLevels = 2;
+    [SerializeField] private int numLevels = 3;
 
     [Header("Timing")]
     [SerializeField] private float splashSeconds = 5f;
