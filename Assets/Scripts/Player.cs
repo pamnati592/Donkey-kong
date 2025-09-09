@@ -268,9 +268,10 @@ public class Player : MonoBehaviour
             if (grounded && vInput < -0.1f)
             {
                 var ladder = FindLadderNearProbe(other);
-                this.transform.position = new Vector3(transform.position.x, transform.position.y - 0.8f, transform.position.z);
+                
                 if (ladder != null)
                 {
+                    this.transform.position = new Vector3(transform.position.x, transform.position.y - 0.8f, transform.position.z);
                     currentLadder = ladder;
                     ladderTopY = ladder.bounds.max.y;
                     StartClimb(ladder, true);
