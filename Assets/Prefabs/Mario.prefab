@@ -184,14 +184,14 @@ MonoBehaviour:
   - {fileID: 4261312395823990064, guid: 9f77ed1c0ac7ecc439de589bc5879f23, type: 3}
   - {fileID: 1109687603413664886, guid: 9f77ed1c0ac7ecc439de589bc5879f23, type: 3}
   rb: {fileID: 9005838048845185126}
-  capsuleCollider: {fileID: 0}
+  capsuleCollider: {fileID: 1029138736128155914}
   moveSpeed: 4
   jumpStrength: 5
   runFps: 12
   climbFps: 8
   attackFps: 14
   hammerHitbox: {fileID: 6417129782135855251}
-  attackDuration: 0.15
+  attackDuration: 0.25
   attackCooldown: 0.1
   ladderExitBuffer: 0.2
   ladderCheckUpExtra: 0.3
