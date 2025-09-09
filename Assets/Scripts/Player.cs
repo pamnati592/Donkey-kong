@@ -6,36 +6,53 @@ public class Player : MonoBehaviour
     [Header("Rendering")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Sprite[] runSprites;
-    [SerializeField] private Sprite climbSprite;    
+    [SerializeField] private Sprite[] runHammerSprites;
+    [SerializeField] private Sprite[] attackHammerSprites;
+    [SerializeField] private Sprite climbSprite;
 
     [Header("Physics")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private CapsuleCollider2D capsuleCollider;
 
-    [Header("Layers")]
-    [SerializeField] private LayerMask groundMask;
-    [SerializeField] private LayerMask ladderMask;
-
     [Header("Movement")]
-    [SerializeField] public float moveSpeed = 3f;
-    [SerializeField] public float jumpStrength = 4f;
+    [SerializeField] private float moveSpeed = 3f;
+    [SerializeField] private float jumpStrength = 4f;
 
     [Header("Animation FPS")]
     [SerializeField] private float runFps = 12f;
     [SerializeField] private float climbFps = 8f;
+    [SerializeField] private float attackFps = 14f;
 
-    private readonly Collider2D[] overlaps = new Collider2D[8];
+    [Header("Hammer Attack")]
+    [SerializeField] private GameObject hammerHitbox;
+    [SerializeField] private float attackDuration = 0.10f;
+    [SerializeField] private float attackCooldown = 0.1f;
+
+    [Header("Ladder Exit")]
+    [SerializeField] private float ladderExitBuffer = 0.2f;
+    [SerializeField] private float ladderCheckUpExtra = 0.3f;
+
     private Vector2 direction;
     private bool grounded;
     private bool climbing;
 
     private int spriteIndex;
     private Coroutine animRoutine;
- 
+
+    private float vInput;
+
+    private Collider2D currentLadder;
+    private float ladderTopY;
+    private bool exitingLadder;
+
+    public bool HasHammer { get; private set; }
+    private bool attacking;
+    private bool canAttack = true;
 
     private void OnEnable()
     {
         animRoutine = StartCoroutine(AnimateLoop());
+        if (hammerHitbox) hammerHitbox.SetActive(false);
     }
 
     private void OnDisable()
@@ -46,8 +63,28 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        vInput = Input.GetAxisRaw("Vertical");
         CheckCollision();
+
+        if (climbing && grounded && vInput <= 0.1f) StopClimb();
+
         SetDirection();
+
+        if (climbing && currentLadder && !exitingLadder && vInput >= 0f)
+        {
+            float halfH = capsuleCollider.bounds.extents.y;
+            float dist = halfH + ladderCheckUpExtra;
+            var hit = Physics2D.Raycast(capsuleCollider.bounds.center, Vector2.up, dist);
+            if (hit.collider != null && hit.collider.CompareTag("Ground"))
+            {
+                float targetY = hit.point.y + halfH + ladderExitBuffer;
+                transform.position = new Vector3(transform.position.x, targetY, transform.position.z);
+                StartCoroutine(ExitLadderSmooth());
+            }
+        }
+
+        if (HasHammer && !attacking && canAttack && Input.GetKeyDown(KeyCode.Z))
+            StartCoroutine(HammerAttack());
     }
 
     private void FixedUpdate()
@@ -55,38 +92,25 @@ public class Player : MonoBehaviour
         rb.MovePosition(rb.position + direction * Time.fixedDeltaTime);
     }
 
-    private static bool IsInMask(int layer, LayerMask mask) => (mask.value & (1 << layer)) != 0;
-
     private void CheckCollision()
     {
         grounded = false;
-        climbing = false;
 
         float skinWidth = 0.1f;
+        var bounds = capsuleCollider.bounds;
 
-        Vector2 size = capsuleCollider.bounds.size;
+        Vector2 size = bounds.size;
         size.y += skinWidth;
         size.x /= 2f;
 
-        var filter = new ContactFilter2D { useTriggers = true };
-        filter.SetLayerMask(groundMask | ladderMask);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(bounds.center, size, 0f);
 
-        int amount = Physics2D.OverlapBox((Vector2)transform.position, size, 0f, filter, overlaps);
-
-        for (int i = 0; i < amount; i++)
+        for (int i = 0; i < hits.Length; i++)
         {
-            var col = overlaps[i];
-            var hit = col.gameObject;
-
-            if (IsInMask(hit.layer, groundMask))
-            {
-                grounded = hit.transform.position.y < (transform.position.y - 0.5f + skinWidth);
-                Physics2D.IgnoreCollision(col, capsuleCollider, !grounded);
-            }
-            else if (IsInMask(hit.layer, ladderMask))
-            {
-                climbing = true;
-            }
+            var col = hits[i];
+            if (!col) continue;
+            if (col.CompareTag("Ground"))
+                grounded = col.transform.position.y < (transform.position.y - 0.5f + skinWidth);
         }
     }
 
@@ -94,28 +118,27 @@ public class Player : MonoBehaviour
     {
         if (climbing)
         {
-            direction.y = Input.GetAxis("Vertical") * moveSpeed;
+            rb.gravityScale = 0f;
+            direction.y = vInput * moveSpeed;
+            direction.x = 0f;
         }
         else if (grounded && Input.GetButtonDown("Jump"))
         {
             direction = Vector2.up * jumpStrength;
+            rb.gravityScale = 3f;
+            direction.x = Input.GetAxis("Horizontal") * moveSpeed;
         }
         else
         {
+            rb.gravityScale = 3f;
             direction += Physics2D.gravity * Time.deltaTime;
+            direction.x = Input.GetAxis("Horizontal") * moveSpeed;
         }
 
-        direction.x = Input.GetAxis("Horizontal") * moveSpeed;
+        if (grounded) direction.y = Mathf.Max(direction.y, -1f);
 
-        if (grounded)
-        {
-            direction.y = Mathf.Max(direction.y, -1f);
-        }
-
-        if (direction.x > 0f)
-            transform.eulerAngles = Vector3.zero;
-        else if (direction.x < 0f)
-            transform.eulerAngles = new Vector3(0f, 180f, 0f);
+        if (direction.x > 0f) transform.eulerAngles = Vector3.zero;
+        else if (direction.x < 0f) transform.eulerAngles = new Vector3(0f, 180f, 0f);
     }
 
     private IEnumerator AnimateLoop()
@@ -124,28 +147,52 @@ public class Player : MonoBehaviour
         {
             bool movingHorizontally = Mathf.Abs(direction.x) > 0.01f;
 
-            float fps = climbing ? climbFps : (movingHorizontally ? runFps : runFps);
+            if (attacking && attackHammerSprites != null && attackHammerSprites.Length > 0)
+            {
+                spriteIndex = (spriteIndex + 1) % attackHammerSprites.Length;
+                spriteRenderer.sprite = attackHammerSprites[spriteIndex];
+                yield return new WaitForSeconds(1f / Mathf.Max(attackFps, 1f));
+                continue;
+            }
+
+            float fps = climbing ? climbFps : runFps;
             float delay = (fps <= 0f) ? (1f / 12f) : (1f / fps);
 
             if (climbing)
             {
-               
-              spriteRenderer.sprite = climbSprite;
-                
+                spriteRenderer.sprite = climbSprite;
             }
-            else if (movingHorizontally && runSprites != null && runSprites.Length > 0)
+            else if (movingHorizontally)
             {
-                spriteIndex = (spriteIndex + 1) % runSprites.Length;
-                spriteRenderer.sprite = runSprites[spriteIndex];
+                var arr = HasHammer ? runHammerSprites : runSprites;
+                if (arr != null && arr.Length > 0)
+                {
+                    spriteIndex = (spriteIndex + 1) % arr.Length;
+                    spriteRenderer.sprite = arr[spriteIndex];
+                }
             }
             else
             {
-
-                spriteRenderer.sprite = runSprites[0];
+                var arr = HasHammer ? runHammerSprites : runSprites;
+                if (arr != null && arr.Length > 0)
+                    spriteRenderer.sprite = arr[0];
             }
 
             yield return new WaitForSeconds(delay);
         }
+    }
+
+    private IEnumerator HammerAttack()
+    {
+        attacking = true;
+        canAttack = false;
+        if (hammerHitbox) hammerHitbox.SetActive(true);
+        hammerHitbox.transform.position = new Vector2(transform.position.x + (transform.eulerAngles.y == 0f ? 0.5f : -0.5f), transform.position.y);
+        yield return new WaitForSeconds(attackDuration);
+        if (hammerHitbox) hammerHitbox.SetActive(false);
+        attacking = false;
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -155,21 +202,83 @@ public class Player : MonoBehaviour
             enabled = false;
             GameManager.Instance.LevelComplete();
         }
-        else if (collision.gameObject.CompareTag("Obstacle"))
+        else if (collision.gameObject.CompareTag("Obstacle") && !attacking)
         {
             enabled = false;
             GameManager.Instance.LevelFailed();
         }
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!capsuleCollider) return;
-        float skinWidth = 0.1f;
-        Vector2 size = capsuleCollider.bounds.size;
-        size.y += skinWidth;
-        size.x /= 2f;
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(transform.position, size);
+        if (other.CompareTag("Objective"))
+        {
+            enabled = false;
+            GameManager.Instance.LevelComplete();
+        }
+        else if (other.CompareTag("Obstacle") && !attacking)
+        {
+            enabled = false;
+            GameManager.Instance.LevelFailed();
+        }
+        else if (other.CompareTag("Hammer"))
+        {
+            HasHammer = true;
+            spriteIndex = 0;
+            Destroy(other.gameObject);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (!other.CompareTag("Ladder")) return;
+
+        currentLadder = other;
+        ladderTopY = other.bounds.max.y;
+
+        if (vInput > 0.1f) StartClimb(other);
+        else if (grounded) StopClimb();
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (!other.CompareTag("Ladder")) return;
+
+        StopClimb();
+        currentLadder = null;
+        ladderTopY = 0f;
+    }
+
+    private void StartClimb(Collider2D ladder)
+    {
+        if (!climbing)
+        {
+            climbing = true;
+            capsuleCollider.isTrigger = true;
+        }
+
+        float centerX = ladder.bounds.center.x;
+        transform.position = new Vector3(centerX, transform.position.y, transform.position.z);
+    }
+
+    private void StopClimb()
+    {
+        if (!climbing) return;
+        climbing = false;
+        exitingLadder = false;
+        capsuleCollider.isTrigger = false;
+        rb.gravityScale = 3f;
+    }
+
+    private IEnumerator ExitLadderSmooth()
+    {
+        if (exitingLadder) yield break;
+        exitingLadder = true;
+        climbing = false;
+        yield return new WaitForFixedUpdate();
+        capsuleCollider.isTrigger = false;
+        currentLadder = null;
+        ladderTopY = 0f;
+        exitingLadder = false;
     }
 }

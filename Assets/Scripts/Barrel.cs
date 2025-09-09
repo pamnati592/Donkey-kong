@@ -1,18 +1,42 @@
-using UnityEngine;
+﻿using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public class Barrel : MonoBehaviour
 {
+    [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private float speed = 6f;
 
-    [SerializeField]private Rigidbody2D rb;
-    public float speed = 1f;
+    private int dirSign = 1;
 
-   
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void Awake()
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground")) {
-            rb.AddForce(collision.transform.right * speed, ForceMode2D.Impulse);
-        }
+        
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
+    private void FixedUpdate()
+    {
+        var v = rb.linearVelocity;
+        v.x = dirSign * speed;
+        rb.linearVelocity = v;
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.CompareTag("Wall"))
+        {
+            dirSign = -dirSign;
+            var v = rb.linearVelocity;
+            v.x = dirSign * speed;
+            rb.linearVelocity = v;
+        }
+        else if (col.gameObject.CompareTag("FirstFloor"))
+        {
+          
+            Destroy(gameObject);
+            
+        }
+    }
 }

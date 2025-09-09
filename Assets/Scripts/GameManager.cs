@@ -1,77 +1,108 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
+using UnityEngine.UI;
 
-[DefaultExecutionOrder(-1)]
 public class GameManager : Singleton<GameManager>
 {
+    [Header("Scenes")]
+    [SerializeField] private string firstSceneName = "FirstScene";
+    [SerializeField] private string menuSceneName = "MainMenu";
    
 
-    private const int NUM_LEVELS = 2;
+    [Header("Levels")]
+    [SerializeField] private int numLevels = 2;
 
-    public int level { get; private set; } = 0;
+    [Header("Timing")]
+    [SerializeField] private float splashSeconds = 5f;
+    [SerializeField] private float transitionSeconds = 1f;
+
+    public int level { get; private set; } = 1;
     public int lives { get; private set; } = 3;
-    public int score { get; private set; } = 0;
-
-   
-
-  
 
     private void Start()
     {
-        level = SceneManager.GetActiveScene().buildIndex + 1;
+        var active = SceneManager.GetActiveScene().name;
+        if (active == firstSceneName)
+            StartCoroutine(FirstSceneFlow());
+    }
+    
+    private IEnumerator FirstSceneFlow()
+    {
+        yield return new WaitForSecondsRealtime(Mathf.Max(0f, splashSeconds));
+        SceneManager.LoadScene(menuSceneName);
     }
 
+    public void OnStartButton()
+    {
+        lives = 3;
+        NewGame();
+    }
+    public void OnQuitButton()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+    public void OnContinueButton()
+    {
+        LoadLevel();
+    }
     private void NewGame()
     {
         lives = 3;
-        score = 0;
-
-        LoadLevel(1);
+        level = 1;
+        LoadLevel();
     }
 
-    private void LoadLevel(int level)
+    private void LoadLevel()
     {
-        this.level = level;
+        if (level > numLevels)
+            level = 1;
 
-        if (level > NUM_LEVELS)
-        {
-            // Start over again at level 1 once you have beaten all the levels
-            // You can also load a "Win" scene instead
-            LoadLevel(1);
-            return;
-        }
+        var cam = Camera.main;
+        if (cam) cam.cullingMask = 0;
 
-        Camera camera = Camera.main;
-
-        // Don't render anything while loading the next scene to create a simple
-        // scene transition effect
-        if (camera != null) {
-            camera.cullingMask = 0;
-        }
-
-        Invoke(nameof(LoadScene), 1f);
+        StartCoroutine(LoadLevelAfterDelay());
     }
 
-    private void LoadScene()
+    private IEnumerator LoadLevelAfterDelay()
     {
+        yield return new WaitForSecondsRealtime(Mathf.Max(0f, transitionSeconds));
         SceneManager.LoadScene($"Level{level}");
     }
 
     public void LevelComplete()
     {
-        score += 1000;
-        LoadLevel(level + 1);
+        level++;
+        if (level > numLevels)
+        {
+            SceneManager.LoadScene("WinningScene");
+        }
+        else
+        {
+            SceneManager.LoadScene("BetwenLevelsWin");
+          
+            
+        }
+        
+        
+       
     }
 
     public void LevelFailed()
     {
         lives--;
-
-        if (lives <= 0) {
-            NewGame();
-        } else {
-            LoadLevel(level);
+        if (lives <= 0)
+        {
+            SceneManager.LoadScene("LosingScene");
+        }
+        else
+        {            
+            SceneManager.LoadScene("BetwenLevelsLose");
+            
         }
     }
-
 }
