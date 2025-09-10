@@ -12,6 +12,7 @@ TagManager:
   - Ladder
   - Hammer
   - LadderUnderMe
+  - HammerHitbox
   layers:
   - Default
   - TransparentFX

@@ -36,7 +36,13 @@ public class GhostSimple : MonoBehaviour
         RaycastHit2D downHit = Physics2D.Raycast(origin, Vector2.down, checkDown, groundMask);
         if (!downHit) Flip();
     }
-
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("HammerHitbox"))
+        {
+            Destroy(gameObject);
+        }
+    }
     private void Flip()
     {
         dir = -dir;

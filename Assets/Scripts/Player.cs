@@ -230,7 +230,7 @@ public class Player : MonoBehaviour
             enabled = false;
             GameManager.Instance.LevelComplete();
         }
-        else if (collision.gameObject.CompareTag("Obstacle") && !attacking)
+        else if (collision.gameObject.CompareTag("Obstacle"))
         {
            StartCoroutine(DeathSequence());
         }
@@ -247,6 +247,7 @@ public class Player : MonoBehaviour
         {
             StartCoroutine(DeathSequence());
         }
+        
         else if (other.CompareTag("Hammer"))
         {
             HasHammer = true;

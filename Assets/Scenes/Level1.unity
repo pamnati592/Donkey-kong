@@ -546,6 +546,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   livesPrefab: {fileID: 3128755832152962830, guid: c1e424c6c70969842996b5447b5e48e3, type: 3}
   livesParentElement: {fileID: 430254195}
+--- !u!61 &621485186 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 6808321977838464840, guid: bee1f3c5268c99442a8451ef8ca798a0, type: 3}
+  m_PrefabInstance: {fileID: 1454050208613633766}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &702692160
 GameObject:
   m_ObjectHideFlags: 0
@@ -1857,11 +1862,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1019850078211712401, guid: f362c8a7a47a0514bbece4e56a1af20a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.92
+      value: -0.9
       objectReference: {fileID: 0}
     - target: {fileID: 1019850078211712401, guid: f362c8a7a47a0514bbece4e56a1af20a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.35
+      value: 6.45
       objectReference: {fileID: 0}
     - target: {fileID: 1019850078211712401, guid: f362c8a7a47a0514bbece4e56a1af20a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1912,9 +1917,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2546405661650988193, guid: bee1f3c5268c99442a8451ef8ca798a0, type: 3}
+      propertyPath: boxCollider
+      value: 
+      objectReference: {fileID: 621485186}
     - target: {fileID: 4610112209590037353, guid: bee1f3c5268c99442a8451ef8ca798a0, type: 3}
       propertyPath: m_Name
       value: Mario
+      objectReference: {fileID: 0}
+    - target: {fileID: 6417129782135855251, guid: bee1f3c5268c99442a8451ef8ca798a0, type: 3}
+      propertyPath: m_TagString
+      value: HammerHitbox
       objectReference: {fileID: 0}
     - target: {fileID: 7606273622877131494, guid: bee1f3c5268c99442a8451ef8ca798a0, type: 3}
       propertyPath: m_LocalPosition.x
