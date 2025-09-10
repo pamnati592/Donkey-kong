@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Sprite[] runHammerSprites;
     [SerializeField] private Sprite[] attackHammerSprites;
     [SerializeField] private Sprite[] climbSprites;
+    [SerializeField] private Sprite deadSprite;
 
     [Header("Physics")]
     [SerializeField] private Rigidbody2D rb;
@@ -34,6 +35,11 @@ public class Player : MonoBehaviour
 
     [Header("Ladder Enter Down")]
     [SerializeField] private float enterDownOffset = 0.2f;
+    [SerializeField] public AudioSource jumpAudio;
+    [SerializeField] public AudioSource GetHammerOrAttack;
+    [SerializeField] public AudioSource DieAudio;
+
+
 
     private Vector2 direction;
     private bool grounded;
@@ -57,6 +63,7 @@ public class Player : MonoBehaviour
     {
         animRoutine = StartCoroutine(AnimateLoop());
         if (hammerHitbox) hammerHitbox.SetActive(false);
+        
     }
 
     private void OnDisable()
@@ -131,6 +138,7 @@ public class Player : MonoBehaviour
             direction = Vector2.up * jumpStrength;
             rb.gravityScale = 3f;
             direction.x = Input.GetAxis("Horizontal") * moveSpeed;
+            if (jumpAudio) jumpAudio.Play();
         }
         else
         {
@@ -207,6 +215,7 @@ public class Player : MonoBehaviour
         canAttack = false;
         if (hammerHitbox) hammerHitbox.SetActive(true);
         hammerHitbox.transform.position = new Vector2(transform.position.x + (transform.eulerAngles.y == 0f ? 0.5f : -0.5f), transform.position.y);
+        if (GetHammerOrAttack) GetHammerOrAttack.Play();
         yield return new WaitForSeconds(attackDuration);
         if (hammerHitbox) hammerHitbox.SetActive(false);
         attacking = false;
@@ -223,8 +232,7 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Obstacle") && !attacking)
         {
-            enabled = false;
-            GameManager.Instance.LevelFailed();
+           StartCoroutine(DeathSequence());
         }
     }
 
@@ -237,15 +245,26 @@ public class Player : MonoBehaviour
         }
         else if (other.CompareTag("Obstacle") && !attacking)
         {
-            enabled = false;
-            GameManager.Instance.LevelFailed();
+            StartCoroutine(DeathSequence());
         }
         else if (other.CompareTag("Hammer"))
         {
             HasHammer = true;
             spriteIndex = 0;
             Destroy(other.gameObject);
+            if (GetHammerOrAttack) GetHammerOrAttack.Play();
         }
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        spriteRenderer.sprite = deadSprite;
+        if (DieAudio) DieAudio.Play();
+        Time.timeScale = 0f; // Freeze the game
+        yield return new WaitForSecondsRealtime(2f); // Use realtime since game is paused
+        Time.timeScale = 1f; // Restore normal time
+        enabled = false;
+        GameManager.Instance.LevelFailed();
     }
 
     private void OnTriggerStay2D(Collider2D other)

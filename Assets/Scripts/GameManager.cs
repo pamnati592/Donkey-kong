@@ -16,6 +16,13 @@ public class GameManager : Singleton<GameManager>
     [Header("Timing")]
     [SerializeField] private float splashSeconds = 5f;
     [SerializeField] private float transitionSeconds = 1f;
+    [Header("Audio")]
+    
+    
+    [SerializeField] private AudioSource StartLevel;
+    [SerializeField] private AudioSource Background;
+    [SerializeField] private AudioSource WinLevel;
+
 
     public int level { get; private set; } = 1;
     public int lives { get; private set; } = 3;
@@ -37,6 +44,8 @@ public class GameManager : Singleton<GameManager>
     {
         lives = 3;
         NewGame();
+        if(Background.isPlaying) Background.Stop();
+        StartLevel.Play();
     }
     public void OnQuitButton()
     {
@@ -49,6 +58,7 @@ public class GameManager : Singleton<GameManager>
     public void OnContinueButton()
     {
         LoadLevel();
+        StartLevel.Play();
     }
     private void NewGame()
     {
@@ -76,6 +86,7 @@ public class GameManager : Singleton<GameManager>
 
     public void LevelComplete()
     {
+        WinLevel.Play();
         level++;
         if (level > numLevels)
         {
