@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
+
+    
     [Header("Scenes")]
     [SerializeField] private string firstSceneName = "FirstScene";
     [SerializeField] private string menuSceneName = "MainMenu";
@@ -61,6 +63,15 @@ public class GameManager : Singleton<GameManager>
         LoadLevel();
         StartLevel.Play();
     }
+    public void OnMainMenuButton()
+    {
+        SceneManager.LoadScene(menuSceneName);
+        Background.Play();
+        
+    }
+    
+
+
     private void NewGame()
     {
         lives = 3;

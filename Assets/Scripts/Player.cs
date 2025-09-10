@@ -81,6 +81,14 @@ public class Player : MonoBehaviour
 
         SetDirection();
 
+        CheckAndHandleLadderTopExit();
+
+        if (HasHammer && !attacking && canAttack && Input.GetKeyDown(KeyCode.Z))
+            StartCoroutine(HammerAttack());
+    }
+
+    private void CheckAndHandleLadderTopExit()
+    {
         if (climbing && currentLadder && !exitingLadder && vInput >= 0f)
         {
             float halfH = capsuleCollider.bounds.extents.y;
@@ -93,9 +101,6 @@ public class Player : MonoBehaviour
                 StartCoroutine(ExitLadderSmooth());
             }
         }
-
-        if (HasHammer && !attacking && canAttack && Input.GetKeyDown(KeyCode.Z))
-            StartCoroutine(HammerAttack());
     }
 
     private void FixedUpdate()
@@ -129,28 +134,47 @@ public class Player : MonoBehaviour
     {
         if (climbing)
         {
-            rb.gravityScale = 0f;
-            direction.y = vInput * moveSpeed;
-            direction.x = 0f;
+            SetClimbing();
         }
         else if (grounded && Input.GetButtonDown("Jump"))
         {
-            direction = Vector2.up * jumpStrength;
-            rb.gravityScale = 3f;
-            direction.x = Input.GetAxis("Horizontal") * moveSpeed;
-            if (jumpAudio) jumpAudio.Play();
+            SetJump();
         }
         else
         {
-            rb.gravityScale = 3f;
-            direction += Physics2D.gravity * Time.deltaTime;
-            direction.x = Input.GetAxis("Horizontal") * moveSpeed;
+            SetWalking();
         }
 
         if (grounded) direction.y = Mathf.Max(direction.y, -1f);
+        SetPlayerAngular();
+    }
 
+    private void SetPlayerAngular()
+    {
         if (direction.x > 0f) transform.eulerAngles = Vector3.zero;
         else if (direction.x < 0f) transform.eulerAngles = new Vector3(0f, 180f, 0f);
+    }
+
+    private void SetWalking()
+    {
+        rb.gravityScale = 3f;
+        direction += Physics2D.gravity * Time.deltaTime;
+        direction.x = Input.GetAxis("Horizontal") * moveSpeed;
+    }
+
+    private void SetJump()
+    {
+        direction = Vector2.up * jumpStrength;
+        rb.gravityScale = 3f;
+        direction.x = Input.GetAxis("Horizontal") * moveSpeed;
+        if (jumpAudio) jumpAudio.Play();
+    }
+
+    private void SetClimbing()
+    {
+        rb.gravityScale = 0f;
+        direction.y = vInput * moveSpeed;
+        direction.x = 0f;
     }
 
     private IEnumerator AnimateLoop()
