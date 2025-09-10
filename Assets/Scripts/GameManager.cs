@@ -57,6 +57,7 @@ public class GameManager : Singleton<GameManager>
     }
     public void OnContinueButton()
     {
+        if(WinLevel.isPlaying) WinLevel.Stop();
         LoadLevel();
         StartLevel.Play();
     }

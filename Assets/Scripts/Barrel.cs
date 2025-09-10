@@ -4,7 +4,7 @@
 public class Barrel : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private float speed = 6f;
+    [SerializeField] private float speed = 8f;
 
     private int dirSign = 1;
 

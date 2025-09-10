@@ -148,9 +148,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17c6a6179cc36764097a08e5ba9cf3f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 0}
-  speed: 6
-  checkDown: 1.5
+  rb: {fileID: -1086317837705952738}
+  speed: 5
+  checkDown: 0.8
   edgeOffset: 0.02
   groundMask:
     serializedVersion: 2

@@ -256,7 +256,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    private IEnumerator DeathSequence()
+    public IEnumerator DeathSequence()
     {
         spriteRenderer.sprite = deadSprite;
         if (DieAudio) DieAudio.Play();

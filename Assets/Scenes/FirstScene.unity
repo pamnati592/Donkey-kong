@@ -304,7 +304,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstSceneName: FirstScene
   menuSceneName: MainMenu
-  numLevels: 2
+  numLevels: 3
   splashSeconds: 5
   transitionSeconds: 1
   StartLevel: {fileID: 1720032010}
@@ -517,7 +517,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 2cf0dbebdbb09da4083174b76e222f6a, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.401
   m_Pitch: 1
   Loop: 0
   Mute: 0

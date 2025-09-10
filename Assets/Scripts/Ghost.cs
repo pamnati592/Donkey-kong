@@ -4,9 +4,9 @@ using UnityEngine;
 public class GhostSimple : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private float speed = 1.8f;
-    [SerializeField] private float checkDown = 0.6f;
-    [SerializeField] private float edgeOffset = 0.02f;
+    [SerializeField] private float speed;
+    [SerializeField] private float checkDown;
+    [SerializeField] private float edgeOffset;
     [SerializeField] private LayerMask groundMask;
 
     private int dir = -1;
@@ -24,6 +24,8 @@ public class GhostSimple : MonoBehaviour
 
     private void FixedUpdate()
     {
+        
+      
         rb.linearVelocity = new Vector2(dir * speed, 0f);
 
         Bounds b = col.bounds;
@@ -43,23 +45,8 @@ public class GhostSimple : MonoBehaviour
         transform.eulerAngles = e;
     }
 
-  
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-       
-        if (other.CompareTag("Player"))
-        {
-            GameManager.Instance.LevelFailed();
-        }
-    }
 
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            GameManager.Instance.LevelFailed();
-        }
-    }
+    
 
-   
+
 }
