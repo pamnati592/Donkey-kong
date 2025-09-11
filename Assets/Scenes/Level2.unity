@@ -2077,7 +2077,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1292753161}
   - component: {fileID: 1292753160}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: EndMap
   m_TagString: FirstFloor
   m_Icon: {fileID: 0}
