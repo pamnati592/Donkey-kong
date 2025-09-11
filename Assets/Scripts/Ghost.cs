@@ -4,7 +4,7 @@ using UnityEngine;
 public class GhostSimple : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private float speed = 6;
+    [SerializeField] private float speed = 5;
     [SerializeField] private float checkDown;
     [SerializeField] private float edgeOffset;
     [SerializeField] private LayerMask groundMask;

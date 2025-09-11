@@ -13,7 +13,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private int livesLow = 5;
     [SerializeField] private int livesHigh = 3;
 
-    [SerializeField] private float enemySpeedMulLow = 0.7f;
+    [SerializeField] private float enemySpeedMulLow = 0.8f;
     [SerializeField] private float enemySpeedMulHigh = 1.0f;
 
     [SerializeField] private float spawnIntervalMulLow = 2f; 
@@ -142,7 +142,6 @@ private void Start()
 
         var cam = Camera.main;
         if (cam) cam.cullingMask = 0;
-
         StartCoroutine(LoadLevelAfterDelay());
     }
 
@@ -156,6 +155,10 @@ private void Start()
     {
         WinLevel.Play();
         level++;
+        if(level == 3 && difficulty == Difficulty.High)
+        {
+            lives++;
+        }
         if (level > numLevels)
         {
             SceneManager.LoadScene("WinningScene");
