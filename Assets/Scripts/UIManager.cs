@@ -10,6 +10,10 @@ public class MenuUI : MonoBehaviour
 
     public void ReturnToMenu() => GameManager.Instance.OnMainMenuButton();
 
+    public void HighLevel() => GameManager.Instance.OnSelectHighLevelButton();
+
+    public void LowLevel() => GameManager.Instance.OnSelectLowLevelButton();
+
    
 
 

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4c1f6022c316ff747856ea71f5912afe
+guid: 44190b01f32f35e42a8b97492b73e05d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7229909164606600149
-    second: BetwenWin_0
+      213: -3933795328685120570
+    second: SelectDifficulty_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BetwenWin_0
+      name: SelectDifficulty_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5d3b7ba541cc55460800000000000000
-      internalID: 7229909164606600149
+      spriteID: 6c3e1ae9df95869c0800000000000000
+      internalID: -3933795328685120570
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      BetwenWin_0: 7229909164606600149
+      SelectDifficulty_0: -3933795328685120570
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

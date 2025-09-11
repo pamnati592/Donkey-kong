@@ -3,8 +3,8 @@ using UnityEngine;
 public class Spawner : MonoBehaviour
 {
     public GameObject prefab;
-    public float minTime = 2f;
-    public float maxTime = 4f;
+    public float minTime = 1f;
+    public float maxTime = 2.5f;
 
     private void OnEnable()
     {
@@ -19,7 +19,7 @@ public class Spawner : MonoBehaviour
     private void Spawn()
     {
         Instantiate(prefab, transform.position, Quaternion.identity);
-        Invoke(nameof(Spawn), Random.Range(minTime, maxTime));
+        Invoke(nameof(Spawn), Random.Range(minTime*GameManager.Instance.SpawnIntervalMul, maxTime * GameManager.Instance.SpawnIntervalMul));
     }
 
 }

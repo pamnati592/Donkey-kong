@@ -3,14 +3,27 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.UI;
 
+public enum Difficulty { Low, High }
+
 public class GameManager : Singleton<GameManager>
 {
+    [Header("Difficulty")]
+    [SerializeField] public Difficulty difficulty = Difficulty.Low;
 
-    
+    [SerializeField] private int livesLow = 5;
+    [SerializeField] private int livesHigh = 3;
+
+    [SerializeField] private float enemySpeedMulLow = 0.7f;
+    [SerializeField] private float enemySpeedMulHigh = 1.0f;
+
+    [SerializeField] private float spawnIntervalMulLow = 2f; 
+    [SerializeField] private float spawnIntervalMulHigh = 1f;
+
     [Header("Scenes")]
     [SerializeField] private string firstSceneName = "FirstScene";
     [SerializeField] private string menuSceneName = "MainMenu";
-   
+    [SerializeField] private string LevelScene = "LevelScene";
+
 
     [Header("Levels")]
     [SerializeField] private int numLevels = 3;
@@ -27,15 +40,40 @@ public class GameManager : Singleton<GameManager>
 
 
     public int level { get; private set; } = 1;
-    public int lives { get; private set; } = 3;
+    public int lives { get; private set; }
 
-    private void Start()
+
+    public float EnemySpeedMul =>
+        (difficulty == Difficulty.High) ? enemySpeedMulHigh : enemySpeedMulLow;
+
+    public float SpawnIntervalMul =>
+        (difficulty == Difficulty.High) ? spawnIntervalMulHigh : spawnIntervalMulLow;
+
+   
+
+
+private void Start()
     {
         var active = SceneManager.GetActiveScene().name;
         if (active == firstSceneName)
             StartCoroutine(FirstSceneFlow());
     }
-    
+
+        public void SetDifficultyLow()
+    {
+        difficulty = Difficulty.Low;
+        lives = livesLow;
+      
+    }
+
+    public void SetDifficultyHigh()
+    {
+        difficulty = Difficulty.High;
+        lives = livesHigh;
+        
+    }
+
+
     private IEnumerator FirstSceneFlow()
     {
         yield return new WaitForSecondsRealtime(Mathf.Max(0f, splashSeconds));
@@ -44,10 +82,8 @@ public class GameManager : Singleton<GameManager>
 
     public void OnStartButton()
     {
-        lives = 3;
-        NewGame();
-        if(Background.isPlaying) Background.Stop();
-        StartLevel.Play();
+        SceneManager.LoadScene(LevelScene);
+        
     }
     public void OnQuitButton()
     {
@@ -57,6 +93,25 @@ public class GameManager : Singleton<GameManager>
         Application.Quit();
 #endif
     }
+
+    public void OnSelectHighLevelButton()
+    {
+        SetDifficultyHigh();
+        NewGame();
+        if (Background.isPlaying) Background.Stop();
+        StartLevel.Play();
+    }
+
+    public void OnSelectLowLevelButton()
+    {
+        SetDifficultyLow();
+        NewGame();
+        if (Background.isPlaying) Background.Stop();
+        StartLevel.Play();
+
+    }
+
+
     public void OnContinueButton()
     {
         if(WinLevel.isPlaying) WinLevel.Stop();
@@ -65,6 +120,7 @@ public class GameManager : Singleton<GameManager>
     }
     public void OnMainMenuButton()
     {
+        if(WinLevel.isPlaying) WinLevel.Stop();
         SceneManager.LoadScene(menuSceneName);
         Background.Play();
         
@@ -72,9 +128,9 @@ public class GameManager : Singleton<GameManager>
     
 
 
-    private void NewGame()
+    void NewGame()
     {
-        lives = 3;
+        lives = (difficulty == Difficulty.High) ? livesHigh : livesLow;
         level = 1;
         LoadLevel();
     }

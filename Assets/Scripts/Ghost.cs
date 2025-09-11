@@ -4,7 +4,7 @@ using UnityEngine;
 public class GhostSimple : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private float speed;
+    [SerializeField] private float speed = 6;
     [SerializeField] private float checkDown;
     [SerializeField] private float edgeOffset;
     [SerializeField] private LayerMask groundMask;
@@ -26,7 +26,7 @@ public class GhostSimple : MonoBehaviour
     {
         
       
-        rb.linearVelocity = new Vector2(dir * speed, 0f);
+        rb.linearVelocity = new Vector2(dir * speed*GameManager.Instance.EnemySpeedMul, 0f);
 
         Bounds b = col.bounds;
         float frontX = (dir > 0) ? b.max.x : b.min.x;

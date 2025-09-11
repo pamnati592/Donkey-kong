@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1142363493725838696, guid: 23515d66097f95a418389b17a6e3b2e3, type: 3}
+  m_Sprite: {fileID: -7787156984072638140, guid: edb896091c1e45746ad37ff54128ff7c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -611,7 +611,7 @@ GameObject:
   - component: {fileID: 2108741201}
   - component: {fileID: 2108741204}
   m_Layer: 5
-  m_Name: ExitButton
+  m_Name: MenuButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -682,7 +682,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2108741204}
         m_TargetAssemblyTypeName: MenuUI, Assembly-CSharp
-        m_MethodName: ExitGame
+        m_MethodName: ReturnToMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
