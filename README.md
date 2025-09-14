@@ -1,4 +1,5 @@
 Donkey Kong – Unity Remake
+
 Overview
 
 A compact 2D platformer inspired by the classic Donkey Kong. Run, jump, climb ladders, dodge rolling barrels and ghosts, grab a hammer power-up to smash hazards, and reach Pauline to clear the level. Includes main menu, difficulty select, pause, multiple levels, lives, and background music.
@@ -17,12 +18,12 @@ ESC — Pause / Resume
 
 How to Play
 
-Start Level 1: From the Main Menu press Start Game, go to Select Difficulty, choose High or Low, and the game loads Level 1.
+1. Start Level 1: From the Main Menu press Start Game, go to Select Difficulty, choose High or Low, and the game loads Level 1.
 
-Move across platforms and use ladders to change floors.
+2. Move across platforms and use ladders to change floors.
 
-Avoid hazards (barrels, fire barrels, ghosts). If a hazard touches you and you’re not actively hitting it with the hammer’s hitbox, you lose a life.
+3. Avoid hazards (barrels, fire barrels, ghosts). If a hazard touches you and you’re not actively hitting it with the hammer’s hitbox, you lose a life.
 
-Pick up the hammer to briefly attack with Z and break nearby barrels.
+4. Pick up the hammer to briefly attack with Z and break nearby barrels.
 
-Reach Pauline at the top to complete the level. If you lose all lives you’ll see the losing screen; otherwise you retry or advance.
+5. Reach Pauline at the top to complete the level. If you lose all lives you’ll see the losing screen; otherwise you retry or advance.
